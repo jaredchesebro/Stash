@@ -21,6 +21,7 @@ class Stash {
     public $stash_cookie_expire;
     public $default_scope;
     public $limit_bots;
+    public $pagination;
     public static $context = NULL;
     
     protected $xss_clean;
@@ -61,6 +62,7 @@ class Stash {
     private $parse_if_in;
     private $include_query_str;
     private $nocache_id;
+    private $_key2sort;
 
     /*
      * Constructor
@@ -210,7 +212,7 @@ class Stash {
         }
         
         // allow the site_id to be overridden, for e.g. shared variables across mutliple sites
-        $this->site_id = (integer) ee()->TMPL->fetch_param('site_id', $this->site_id);
+        $this->site_id = (int) ee()->TMPL->fetch_param('site_id', $this->site_id);
 
         // selected bundle
         $bundle = ee()->TMPL->fetch_param('bundle', 'default');
@@ -603,7 +605,7 @@ class Stash {
                 // if we're setting a variable from a global ($_POST, $_GET etc), it could be an array
                 if ( is_array(ee()->TMPL->tagdata))
                 {   
-                    ee()->TMPL->tagdata = array_filter(ee()->TMPL->tagdata, 'strlen');
+                    ee()->TMPL->tagdata = array_filter(ee()->TMPL->tagdata, function($v) { return $v !== NULL && $v !== ''; });
                     ee()->TMPL->tagdata = implode($delimiter, ee()->TMPL->tagdata);
                 }
             
@@ -3288,7 +3290,7 @@ class Stash {
         else
         {
             // remove null values
-            $against = array_filter($against, 'strlen');
+            $against = array_filter($against, function($v) { return $v !== NULL && $v !== ''; });
         }
         
         // check every value in the array matches
