@@ -52,6 +52,15 @@ class Stash {
     private static $_nocache_prefixes = array('stash');
     private static $_is_human = TRUE;
     private static $_cache;
+    private $stash_cookie_enabled;
+    private $default_refresh;
+    private $prune;
+    private $prune_probability;
+    private $invalidation_period;
+    private $file_extensions;
+    private $parse_if_in;
+    private $include_query_str;
+    private $nocache_id;
 
     /*
      * Constructor
