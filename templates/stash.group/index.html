@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Stash Addon Test — All Features</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans m-8 leading-[1.4] text-[#1c2024]">
+	<h1 class="text-3xl font-bold m-0 mb-1">Stash Addon Test — All Features</h1>
+	<p class="text-gray-500 mt-0 mb-6 text-[.9rem]">v3.2.1 · single-page at-a-glance check · live request time {current_time format="%H:%i:%s"} · compare Output vs Expected</p>
+
+	{!-- ================= SETUP (silent) ================= --}
+	{exp:stash:set name="greeting" type="variable" scope="local"}Hello from Stash{/exp:stash:set}
+	{exp:stash:block name="blk" output="no"}block captured{/exp:stash:block}
+	{exp:stash:set name="list" type="variable" scope="local"}item-1{/exp:stash:set}
+	{exp:stash:append name="list" type="variable" scope="local"}, item-2{/exp:stash:append}
+	{exp:stash:set name="stack" type="variable" scope="local"}base{/exp:stash:set}
+	{exp:stash:prepend name="stack" type="variable" scope="local"}top, {/exp:stash:prepend}
+	{exp:stash:set_value name="sv" value="middle" type="variable" scope="local"}
+	{exp:stash:prepend_value name="sv" value="start-" type="variable" scope="local"}
+	{exp:stash:append_value name="sv" value="-end" type="variable" scope="local"}
+
+	{exp:stash:set_list name="people"}
+		{stash:name}Alice{/stash:name}{stash:role}Engineer{/stash:role}
+		{stash:name}Bob{/stash:name}{stash:role}Designer{/stash:role}
+		{stash:name}Carol{/stash:name}{stash:role}Manager{/stash:role}
+	{/exp:stash:set_list}
+	{exp:stash:append_list name="people"}{stash:name}Dave{/stash:name}{stash:role}Appended{/stash:role}{/exp:stash:append_list}
+	{exp:stash:prepend_list name="people"}{stash:name}Zoe{/stash:name}{stash:role}Prepended{/stash:role}{/exp:stash:prepend_list}
+	{exp:stash:set_list name="fruits"}{stash:label}apple{/stash:label}{stash:label}banana{/stash:label}{/exp:stash:set_list}
+	{exp:stash:set_list name="veg"}{stash:label}carrot{/stash:label}{/exp:stash:set_list}
+	{exp:stash:join_lists name="combined" lists="fruits,veg"}{/exp:stash:join_lists}
+
+	{exp:stash:context name="news"}
+	{exp:stash:set name="headline" context="news" type="variable" scope="local"}Big News{/exp:stash:set}
+	{exp:stash:set name="filled" type="variable" scope="local"}x{/exp:stash:set}
+	{exp:stash:set name="blank" type="variable" scope="local"}{/exp:stash:set}
+	{exp:stash:set name="original" type="variable" scope="local"}copy-me{/exp:stash:set}
+	{exp:stash:copy name="original" copy_name="duplicate" scope="local" copy_scope="local"}
+	{exp:stash:set name="inner" type="variable" scope="local"}INNER{/exp:stash:set}
+	{exp:stash:set name="outer" type="variable" scope="local"}wrap[{exp:stash:get name="inner"}]{/exp:stash:set}
+	{exp:stash:set name="cond" type="variable" scope="local" parse_conditionals="yes"}{if "a"=="a"}cond-true{if:else}cond-false{/if}{/exp:stash:set}
+	{exp:stash:set name="temp" type="variable" scope="local"}temp{/exp:stash:set}
+	{exp:stash:destroy name="temp" type="variable" scope="local"}
+
+	{exp:stash:extend name="extended" with="card" stash:title="Hi" stash:body="from extend"}
+	{exp:stash:set name="persisted" type="variable" scope="site" save="yes" refresh="5"}persisted-OK{/exp:stash:set}
+
+	{!-- ================= CORE ================= --}
+	<h2 class="text-[.8rem] uppercase tracking-[.05em] text-gray-500 mt-7 mb-2 border-b border-gray-200 pb-1">Core — set / get / block / append / prepend</h2>
+	<table class="w-full border-collapse text-[.9rem] table-fixed">
+		<colgroup><col class="w-[24%]"><col class="w-[40%]"><col class="w-[30%]"><col class="w-[6%]"></colgroup>
+		<tr><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Feature</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Output</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Expected</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">OK</th></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">set + get</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="greeting"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Hello from Stash</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">get default=</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="missing" default="(fallback)"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">(fallback)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">block output="no"</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="blk"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">block captured</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">append</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="list"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">item-1, item-2</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">prepend</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="stack"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">top, base</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">set/append/prepend_value</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="sv"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">start-middle-end</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+	</table>
+
+	{!-- ================= LISTS ================= --}
+	<h2 class="text-[.8rem] uppercase tracking-[.05em] text-gray-500 mt-7 mb-2 border-b border-gray-200 pb-1">Lists</h2>
+	<table class="w-full border-collapse text-[.9rem] table-fixed">
+		<colgroup><col class="w-[24%]"><col class="w-[40%]"><col class="w-[30%]"><col class="w-[6%]"></colgroup>
+		<tr><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Feature</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Output</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Expected</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">OK</th></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">set_list / get_list</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get_list name="people" backspace="2"}{name}, {/exp:stash:get_list}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Zoe, Alice, Bob, Carol, Dave</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">append_list + prepend_list</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get_list name="people" backspace="2"}{name}({role}), {/exp:stash:get_list}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Zoe first, Dave last</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">orderby="name" sort="asc"</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get_list name="people" orderby="name" sort="asc" backspace="1"}{name} {/exp:stash:get_list}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Alice Bob Carol Dave Zoe</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">limit="2" offset="1"</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get_list name="people" limit="2" offset="1" backspace="1"}{name} {/exp:stash:get_list}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Alice Bob</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">match / against filter</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get_list name="people" against="role" match="#^(Engineer|Designer)$#" backspace="1"}{name} {/exp:stash:get_list}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Alice Bob</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">join_lists</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get_list name="combined" backspace="1"}{label} {/exp:stash:get_list}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">apple banana carrot</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">list_count</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">people={exp:stash:list_count name="people"} · combined={exp:stash:list_count name="combined"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">people=5 · combined=3</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+	</table>
+
+	{!-- ================= ADVANCED ================= --}
+	<h2 class="text-[.8rem] uppercase tracking-[.05em] text-gray-500 mt-7 mb-2 border-b border-gray-200 pb-1">Advanced</h2>
+	<table class="w-full border-collapse text-[.9rem] table-fixed">
+		<colgroup><col class="w-[24%]"><col class="w-[40%]"><col class="w-[30%]"><col class="w-[6%]"></colgroup>
+		<tr><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Feature</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Output</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Expected</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">OK</th></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">context (name: / @:)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="news:headline"} / {exp:stash:get name="@:headline"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">Big News / Big News</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">not_empty / is_empty</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:not_empty name="filled"} / {exp:stash:is_empty name="blank"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">1 / 1</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">copy</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="duplicate"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">copy-me</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">parse (re-parse tags)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="outer" parse_tags="yes" parse="yes"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">wrap[INNER]</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">parse_conditionals</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="cond"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">cond-true</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">destroy</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="temp" default="(gone)"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">(gone)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+	</table>
+
+	{!-- ================= HEAVY ================= --}
+	<h2 class="text-[.8rem] uppercase tracking-[.05em] text-gray-500 mt-7 mb-2 border-b border-gray-200 pb-1">Heavy — embed / extend / cache / persistence</h2>
+	<table class="w-full border-collapse text-[.9rem] table-fixed">
+		<colgroup><col class="w-[24%]"><col class="w-[40%]"><col class="w-[30%]"><col class="w-[6%]"></colgroup>
+		<tr><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Feature</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Output</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">Expected</th><th class="text-left text-[.72rem] uppercase tracking-[.04em] text-gray-400 px-2 py-[.3rem]">OK</th></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">embed (file + vars)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:embed name="card" stash:title="Embedded" stash:body="from card.html"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">card with title "Embedded"</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">extend (embed → var)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="extended"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">card with title "Hi"</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">cache (frozen fragment)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:cache name="frag" refresh="1"}cached@{current_time format="%H:%i:%s"}{/exp:stash:cache}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">frozen on reload</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#9a6700]">!</td></tr>
+		<tr><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#0550ae]">save="yes" (DB persist)</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-[#111827]">{exp:stash:get name="persisted" scope="site"}</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words font-mono text-[.8rem] text-gray-500">persisted-OK</td><td class="px-2 py-[.4rem] border-t border-[#f0f0f0] align-top break-words text-center text-[#1a7f37]">✓</td></tr>
+	</table>
+
+	<div class="text-[.8rem] text-gray-500 mt-8 border-t border-gray-200 pt-3">
+		<p>✓ output matches expected · <span class="text-[#9a6700]">!</span> expected behavior worth noting (not a failure).</p>
+		<p><strong>list_count parse-order:</strong> here it reports 5 because the append_list/prepend_list calls sit in the setup block above and were applied before the inline <code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">list_count</code> ran. Place a <code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">list_count</code> textually <em>between</em> an append and the deferred get and it can still report the pre-append count — <code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">list_count</code> runs inline while <code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">append_list</code>/<code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">get_list</code> defer to post_parse.</p>
+		<p><strong>cache:</strong> the cached time stays fixed on reload while the live request time at the top advances. Stash cache lives in <code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">exp_stash</code> and is not cleared by EE's native cache flush.</p>
+		<p><strong>build note:</strong> assertions are shown as Output-vs-Expected columns rather than inline <code class="bg-[#f4f4f4] px-1 rounded-[3px] font-mono">{if}</code> conditionals, because deferred Stash tags (get/get_list/embed) inside a conditional don't resolve at inline-eval time and can break the parser.</p>
+	</div>
+</body>
+</html>
